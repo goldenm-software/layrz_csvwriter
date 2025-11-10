@@ -1,20 +1,19 @@
 import 'exceptions.dart';
 
 class CsvData {
-  CsvData.withHeaders(
-      Iterable<String> headers, String separator, String endOfLine)
-      : _headers = List.unmodifiable(headers),
-        _values = List.filled(headers.length, null),
-        _separator = separator,
-        _separatorRunes = separator.runes.toList(),
-        _endOfLineRunes = endOfLine.runes.toList() {
+  CsvData.withHeaders(Iterable<String> headers, String separator, String endOfLine)
+    : _headers = List.unmodifiable(headers),
+      _values = List.filled(headers.length, null),
+      _separator = separator,
+      _separatorRunes = separator.runes.toList(),
+      _endOfLineRunes = endOfLine.runes.toList() {
     for (var i = 0; i < _headers.length; i++) {
       _columnCache.putIfAbsent(_headers[i], () => <int>[]).add(i);
     }
   }
 
   CsvData(int nbColumns, String separator, String endOfLine)
-      : this.withHeaders(List.filled(nbColumns, ''), separator, endOfLine);
+    : this.withHeaders(List.filled(nbColumns, ''), separator, endOfLine);
 
   final List<String> _headers;
   final List _values;
@@ -54,8 +53,7 @@ class CsvData {
   int _getHeaderIndex(String header, int index) {
     if (_isEmpty(header)) {
       if (index < 0 || index >= _values.length) {
-        throw InvalidHeaderException(
-            'Header "$index" out of range (0..${_values.length - 1})');
+        throw InvalidHeaderException('Header "$index" out of range (0..${_values.length - 1})');
       }
       return index;
     }
@@ -65,23 +63,21 @@ class CsvData {
     }
     if (index < 0) {
       if (indexes.length > 1) {
-        throw InvalidHeaderException(
-            'Multiple headers "$header": missing index');
+        throw InvalidHeaderException('Multiple headers "$header": missing index');
       }
       index = 0;
     }
     if (index < 0 || index >= indexes.length) {
       throw InvalidHeaderException(
-          'Out of range index $index for header "$header": valid range is (0..${indexes.length - 1})');
+        'Out of range index $index for header "$header": valid range is (0..${indexes.length - 1})',
+      );
     }
     return indexes[index];
   }
 
-  dynamic get([String header = '', int index = -1]) =>
-      _values[_getHeaderIndex(header, index)];
+  dynamic get([String header = '', int index = -1]) => _values[_getHeaderIndex(header, index)];
 
-  void set(dynamic value, [String header = '', int index = -1]) =>
-      _values[_getHeaderIndex(header, index)] = value;
+  void set(dynamic value, [String header = '', int index = -1]) => _values[_getHeaderIndex(header, index)] = value;
 
   bool _isMatchAt(List<int> runes, int idx, List<int> otherRunes) {
     var i = 0, l = runes.length, ol = otherRunes.length;

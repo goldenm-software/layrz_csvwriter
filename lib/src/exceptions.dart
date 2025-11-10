@@ -7,7 +7,5 @@ class InvalidHeaderException implements Exception {
   InvalidHeaderException([this.message]);
 
   @override
-  String toString() => (message ?? '').trim().isEmpty
-      ? 'InvalidHeaderException'
-      : 'InvalidHeaderException: $message';
+  String toString() => (message ?? '').trim().isEmpty ? 'InvalidHeaderException' : 'InvalidHeaderException: $message';
 }

@@ -4,8 +4,7 @@ import 'dart:convert';
 import '_sink_wrapper.dart';
 
 import '_sink_wrapper_stub.dart'
-    if (dart.library.js) '_sink_wrapper_impl_browser.dart'
-    if (dart.library.html) '_sink_wrapper_impl_browser.dart'
+    if (dart.library.js_interop) '_sink_wrapper_impl_browser.dart'
     if (dart.library.io) '_sink_wrapper_impl_vm.dart';
 
 import '_csv_data.dart';
@@ -30,20 +29,22 @@ class CsvWriter {
   /// Builds a new [CsvWriter] bound to [sink] with CSV records consisting of [columns] values. [separator]
   /// (default is `','`) and [endOfLine] (default is `'\r\n'`) can be overriden. Using this constructor, data
   /// can only be set/read by index.
-  CsvWriter(StringSink sink, int columns,
-      {this.separator = _defSeparator, this.endOfLine = _defEndOfLine})
-      : _wrapper = wrapSink(sink),
-        _data = CsvData(columns, separator, endOfLine),
-        hasHeader = false;
+  CsvWriter(StringSink sink, int columns, {this.separator = _defSeparator, this.endOfLine = _defEndOfLine})
+    : _wrapper = wrapSink(sink),
+      _data = CsvData(columns, separator, endOfLine),
+      hasHeader = false;
 
   /// Builds a new [CsvWriter] bound to [sink]. The supplied [headers] will be added as the first line, and CS
   ///  records will consist of `headers.length` values. [separator] (default is `','`) and [endOfLine] (default
   /// is `'\r\n'`) can be overriden. Using this constructor, data may be set/read by header name and/or index.
-  CsvWriter.withHeaders(StringSink sink, Iterable<String> headers,
-      {this.separator = _defSeparator, this.endOfLine = _defEndOfLine})
-      : _wrapper = wrapSink(sink),
-        _data = CsvData.withHeaders(headers, separator, endOfLine),
-        hasHeader = true {
+  CsvWriter.withHeaders(
+    StringSink sink,
+    Iterable<String> headers, {
+    this.separator = _defSeparator,
+    this.endOfLine = _defEndOfLine,
+  }) : _wrapper = wrapSink(sink),
+       _data = CsvData.withHeaders(headers, separator, endOfLine),
+       hasHeader = true {
     _wrapper.write(_data.headers.join(separator) + endOfLine);
   }
 
@@ -82,8 +83,7 @@ class CsvWriter {
     } else if (header is String) {
       return _data.get(header, -1);
     } else {
-      throw InvalidHeaderException(
-          'Invalid header type ${header.runtimeType}: extected int or String');
+      throw InvalidHeaderException('Invalid header type ${header.runtimeType}: extected int or String');
     }
   }
 
@@ -96,8 +96,7 @@ class CsvWriter {
     } else if (header is String) {
       _data.set(value, header, -1);
     } else {
-      throw InvalidHeaderException(
-          'Invalid header type ${header.runtimeType}: extected int or String');
+      throw InvalidHeaderException('Invalid header type ${header.runtimeType}: extected int or String');
     }
   }
 
@@ -114,8 +113,7 @@ class CsvWriter {
   /// If multiple headers have the same label, [index] can be used to distinguish amongst them (starting from 0).
   /// If no match is found, or if [index] is out of bounds, throws an [InvalidHeaderException]. Data will not be
   /// written to the [StringSink] before [writeData] is called.
-  void set(dynamic value, {String header = '', int index = -1}) =>
-      _data.set(value, header, index);
+  void set(dynamic value, {String header = '', int index = -1}) => _data.set(value, header, index);
 
   /// Loads [data] into the current data structure. [data] can either be a [List] (data is loaded by index) or
   /// a [Map]`<String, dynamic>` (data is loaded by header name).

@@ -24,7 +24,7 @@ class _BrowserSinkWrapper implements SinkWrapper {
   Future close() {
     if (!_done.isCompleted) {
       if (_sink is ClosableStringSink) {
-        final closableSink = _sink as ClosableStringSink;
+        final closableSink = _sink;
         closableSink.close();
         _done.complete();
       } else {

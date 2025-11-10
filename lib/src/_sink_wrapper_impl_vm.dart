@@ -9,7 +9,7 @@ SinkWrapper wrapSink(StringSink sink) => _IOSinkWrapper(sink);
 class _IOSinkWrapper implements SinkWrapper {
   _IOSinkWrapper(this._sink) {
     if (_sink is IOSink) {
-      (_sink as IOSink).done.whenComplete(_onClose);
+      _sink.done.whenComplete(_onClose);
     }
   }
 
@@ -24,7 +24,7 @@ class _IOSinkWrapper implements SinkWrapper {
   @override
   Future flush() {
     if (_sink is IOSink) {
-      return (_sink as IOSink).flush();
+      return _sink.flush();
     } else {
       return _completed;
     }
@@ -42,18 +42,18 @@ class _IOSinkWrapper implements SinkWrapper {
   Future close() {
     if (!_done.isCompleted) {
       if (_sink is IOSink) {
-        final ioSink = _sink as IOSink;
-        _done.complete(ioSink.flush().whenComplete(() async {
-          _closing = true;
-          try {
-            await ioSink.close();
-          } finally {
-            _closing = false;
-          }
-        }));
+        _done.complete(
+          _sink.flush().whenComplete(() async {
+            _closing = true;
+            try {
+              await _sink.close();
+            } finally {
+              _closing = false;
+            }
+          }),
+        );
       } else if (_sink is ClosableStringSink) {
-        final closableSink = _sink as ClosableStringSink;
-        closableSink.close();
+        _sink.close();
         _done.complete();
       } else {
         _done.complete();
